@@ -56,7 +56,8 @@ try
         app.MapOpenApi();
     }
 
-    app.UseHttpsRedirection();
+    // UseHttpsRedirection disabled — running on HTTP in development
+    // app.UseHttpsRedirection();
 
     app.UseCors();
 
