@@ -42,11 +42,11 @@ public sealed class BanksController(IMediator mediator)
         => FromResult(await Mediator.Send(new DeleteBankCommand(id), ct));
 }
 
-internal sealed record CreateBankRequest(
+public sealed record CreateBankRequest(
     string COMPECode,
     string BankName,
     string? ISPB);
 
-internal sealed record UpdateBankRequest(
+public sealed record UpdateBankRequest(
     string BankName,
     string? ISPB);

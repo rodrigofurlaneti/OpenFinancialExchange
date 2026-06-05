@@ -22,7 +22,7 @@ public sealed class LoggingBehavior<TRequest, TResponse>(
 
         try
         {
-            var response = await next(cancellationToken);
+            var response = await next();
             stopwatch.Stop();
 
             logger.LogInformation(

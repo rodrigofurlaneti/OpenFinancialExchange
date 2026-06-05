@@ -88,7 +88,7 @@ public sealed class TransactionsController(IMediator mediator)
         => FromResult(await Mediator.Send(new ReconcileTransactionCommand(id), ct));
 }
 
-internal sealed record CreateTransactionRequest(
+public sealed record CreateTransactionRequest(
     int      StatementId,
     int?     CategoryId,
     string   TransactionType,
@@ -103,7 +103,7 @@ internal sealed record CreateTransactionRequest(
     string?  TransactionDateMemo,
     string?  OperationSubtype);
 
-internal sealed record UpdateTransactionRequest(
+public sealed record UpdateTransactionRequest(
     int?    CategoryId,
     string? Memo,
     string? PayeeName,

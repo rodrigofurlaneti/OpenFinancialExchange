@@ -55,13 +55,13 @@ public sealed class TransactionCategoriesController(IMediator mediator)
         => FromResult(await Mediator.Send(new DeleteTransactionCategoryCommand(id), ct));
 }
 
-internal sealed record CreateTransactionCategoryRequest(
+public sealed record CreateTransactionCategoryRequest(
     string Code,
     string Description,
     string OperationType,
     string AccountingNature);
 
-internal sealed record UpdateTransactionCategoryRequest(
+public sealed record UpdateTransactionCategoryRequest(
     string Description,
     string OperationType,
     string AccountingNature);

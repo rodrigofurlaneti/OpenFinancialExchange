@@ -63,7 +63,7 @@ public sealed class AccountsController(IMediator mediator)
         => FromResult(await Mediator.Send(new DeleteAccountCommand(id), ct));
 }
 
-internal sealed record CreateAccountRequest(
+public sealed record CreateAccountRequest(
     int     ImportId,
     int     BankId,
     string? BranchNumber,
@@ -71,7 +71,7 @@ internal sealed record CreateAccountRequest(
     string  AccountType,
     string  DefaultCurrency);
 
-internal sealed record UpdateAccountRequest(
+public sealed record UpdateAccountRequest(
     string? BranchNumber,
     string  AccountNumber,
     string  AccountType,

@@ -57,7 +57,7 @@ public sealed class SignonSessionsController(IMediator mediator)
         => FromResult(await Mediator.Send(new DeleteSignonSessionCommand(id), ct));
 }
 
-internal sealed record CreateSignonSessionRequest(
+public sealed record CreateSignonSessionRequest(
     int       ImportId,
     string    StatusCode,
     string    StatusSeverity,
@@ -65,7 +65,7 @@ internal sealed record CreateSignonSessionRequest(
     DateTime? ServerDate,
     string    Language);
 
-internal sealed record UpdateSignonSessionRequest(
+public sealed record UpdateSignonSessionRequest(
     string StatusCode,
     string StatusSeverity,
     string Language);

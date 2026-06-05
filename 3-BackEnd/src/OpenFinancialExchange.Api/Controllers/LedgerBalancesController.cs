@@ -55,13 +55,13 @@ public sealed class LedgerBalancesController(IMediator mediator)
         => FromResult(await Mediator.Send(new DeleteLedgerBalanceCommand(id), ct));
 }
 
-internal sealed record CreateLedgerBalanceRequest(
+public sealed record CreateLedgerBalanceRequest(
     int      StatementId,
     string   BalanceType,
     decimal  Amount,
     DateTime AsOfDate);
 
-internal sealed record UpdateLedgerBalanceRequest(
+public sealed record UpdateLedgerBalanceRequest(
     string   BalanceType,
     decimal  Amount,
     DateTime AsOfDate);

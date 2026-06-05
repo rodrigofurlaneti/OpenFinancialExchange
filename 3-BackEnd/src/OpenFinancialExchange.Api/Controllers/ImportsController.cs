@@ -52,7 +52,7 @@ public sealed class ImportsController(IMediator mediator)
         => FromResult(await Mediator.Send(new DeleteImportCommand(id), ct));
 }
 
-internal sealed record CreateImportRequest(
+public sealed record CreateImportRequest(
     string  FileName,
     string  OFXHeader,
     string  OFXData,
@@ -66,4 +66,4 @@ internal sealed record CreateImportRequest(
     string? Notes,
     string? ImportedBy);
 
-internal sealed record UpdateImportRequest(string? Notes);
+public sealed record UpdateImportRequest(string? Notes);

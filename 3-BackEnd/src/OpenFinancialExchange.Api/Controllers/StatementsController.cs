@@ -60,7 +60,7 @@ public sealed class StatementsController(IMediator mediator)
         => FromResult(await Mediator.Send(new DeleteStatementCommand(id), ct));
 }
 
-internal sealed record CreateStatementRequest(
+public sealed record CreateStatementRequest(
     int       AccountId,
     string    TRNUID,
     string    StatusCode,
@@ -69,7 +69,7 @@ internal sealed record CreateStatementRequest(
     DateTime  EndDate,
     string?   TimeZone);
 
-internal sealed record UpdateStatementRequest(
+public sealed record UpdateStatementRequest(
     string   StatusCode,
     string   StatusSeverity,
     DateTime StartDate,
