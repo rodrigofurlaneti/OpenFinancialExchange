@@ -1,0 +1,6 @@
+@OpenFinancialExchange.API_HostAddress = http://localhost:5044
+
+GET {{OpenFinancialExchange.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
