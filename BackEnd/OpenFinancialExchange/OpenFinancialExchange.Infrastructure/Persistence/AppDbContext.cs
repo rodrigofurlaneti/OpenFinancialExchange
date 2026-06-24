@@ -7,6 +7,8 @@ namespace OpenFinancialExchange.Infrastructure.Persistence;
 
 public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IUnitOfWork
 {
+    public DbSet<User> Users => Set<User>();
+    public DbSet<BankCode> BankCodes => Set<BankCode>();
     public DbSet<FinancialInstitution> FinancialInstitutions => Set<FinancialInstitution>();
     public DbSet<BankAccount> BankAccounts => Set<BankAccount>();
     public DbSet<OfxImport> OfxImports => Set<OfxImport>();

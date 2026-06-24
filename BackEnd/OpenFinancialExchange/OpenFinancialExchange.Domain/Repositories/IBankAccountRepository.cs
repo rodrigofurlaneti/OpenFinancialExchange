@@ -8,5 +8,6 @@ public interface IBankAccountRepository
     Task<IReadOnlyCollection<BankAccount>> GetAllAsync(CancellationToken ct = default);
     Task<IReadOnlyCollection<BankAccount>> GetByInstitutionAsync(long financialInstitutionId, CancellationToken ct = default);
     Task<bool> ExistsAsync(string bankId, string? branchId, string acctId, CancellationToken ct = default);
+    Task<BankAccount?> FindByAcctIdAsync(string acctId, string? bankId = null, CancellationToken ct = default);
     Task AddAsync(BankAccount bankAccount, CancellationToken ct = default);
 }

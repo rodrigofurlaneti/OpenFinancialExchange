@@ -7,10 +7,13 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://localhost:7001',
+        target: 'http://localhost:5044',
         changeOrigin: true,
         secure: false,
       },
     },
+  },
+  optimizeDeps: {
+    include: ['react-hook-form'],
   },
 })

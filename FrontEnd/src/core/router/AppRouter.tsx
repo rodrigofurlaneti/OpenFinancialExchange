@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from '../../shared/components/ProtectedRoute'
 import { Layout } from '../../shared/components/Layout'
 import { LoginPage } from '../../features/auth/LoginPage'
+import { DashboardPage } from '../../features/dashboard/DashboardPage'
 import { FinancialInstitutionsPage } from '../../features/financial-institutions/FinancialInstitutionsPage'
 import { BankAccountsPage } from '../../features/bank-accounts/BankAccountsPage'
 import { OfxPage } from '../../features/ofx/OfxPage'
@@ -12,9 +13,13 @@ const router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       {
-        element: <Layout><Navigate to="/institutions" replace /></Layout>,
+        element: <Layout><Navigate to="/dashboard" replace /></Layout>,
         index: true,
         path: '/',
+      },
+      {
+        path: '/dashboard',
+        element: <Layout><DashboardPage /></Layout>,
       },
       {
         path: '/institutions',

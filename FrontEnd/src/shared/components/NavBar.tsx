@@ -1,11 +1,12 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../core/auth/authStore'
-import { Building2, CreditCard, FileUp, LogOut, BarChart3 } from 'lucide-react'
+import { Building2, CreditCard, FileUp, LogOut, BarChart3, LayoutDashboard } from 'lucide-react'
 
 const NAV_ITEMS = [
-  { to: '/institutions',  label: 'Instituições',  icon: Building2  },
-  { to: '/bank-accounts', label: 'Contas',        icon: CreditCard },
-  { to: '/ofx',          label: 'OFX',            icon: FileUp     },
+  { to: '/dashboard',     label: 'Dashboard',    icon: LayoutDashboard },
+  { to: '/institutions',  label: 'Instituições', icon: Building2       },
+  { to: '/bank-accounts', label: 'Contas',       icon: CreditCard      },
+  { to: '/ofx',           label: 'OFX',          icon: FileUp          },
 ]
 
 export function NavBar() {
