@@ -28,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<IOfxImportRepository, OfxImportRepository>();
         services.AddScoped<IOfxStatementRepository, OfxStatementRepository>();
         services.AddScoped<IOfxTransactionRepository, OfxTransactionRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
 
         // Security
         services.AddScoped<IPasswordHasher, PasswordHasher>();

@@ -118,5 +118,37 @@ export interface OfxTransactionResponse {
   name: string | null;
   memo: string | null;
   checkNum: string | null;
+  categoryId: number | null;
+  categoryName: string | null;
   createdAt: string;
+}
+
+export interface AssignCategoryRequest {
+  categoryId: number | null;
+}
+
+// ─── Categories ─────────────────────────────────────────────────────────────
+export type CategoryKind = 'CREDIT' | 'DEBIT' | 'BOTH';
+
+export interface CategoryResponse {
+  id: number;
+  name: string;
+  kind: CategoryKind;
+  color: string;
+  isSystem: boolean;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateCategoryRequest {
+  name: string;
+  kind: CategoryKind;
+  color: string;
+}
+
+export interface UpdateCategoryRequest {
+  name: string;
+  kind: CategoryKind;
+  color: string;
 }

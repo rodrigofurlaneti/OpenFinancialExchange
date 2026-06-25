@@ -11,6 +11,10 @@ internal sealed class OfxTransactionRepository(AppDbContext context) : IOfxTrans
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, ct);
 
+    public async Task<OfxTransaction?> GetByIdForUpdateAsync(long id, CancellationToken ct = default)
+        => await context.OfxTransactions
+            .FirstOrDefaultAsync(x => x.Id == id, ct);
+
     public async Task<IReadOnlyCollection<OfxTransaction>> GetByStatementAsync(long statementId, CancellationToken ct = default)
         => await context.OfxTransactions
             .AsNoTracking()

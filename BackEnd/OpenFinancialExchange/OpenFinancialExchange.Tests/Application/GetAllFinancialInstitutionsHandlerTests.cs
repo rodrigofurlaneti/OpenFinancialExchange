@@ -13,7 +13,7 @@ public class GetAllFinancialInstitutionsHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnMappedResponses()
     {
-        var institutionResult = FinancialInstitution.Create("237", "Bradesco", "237");
+        var institutionResult = FinancialInstitution.Create(1, "237", "Bradesco", "237");
         var institutions = new List<FinancialInstitution> { institutionResult.Value };
         _repository.GetAllAsync(Arg.Any<CancellationToken>()).Returns(institutions);
 

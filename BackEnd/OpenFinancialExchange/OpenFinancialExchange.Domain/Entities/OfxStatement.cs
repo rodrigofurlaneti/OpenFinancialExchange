@@ -7,6 +7,7 @@ public sealed class OfxStatement : AggregateRoot
     private readonly List<OfxTransaction> _transactions = [];
     private readonly List<OfxBalance> _balances = [];
 
+    public long UserId { get; private set; }
     public long ImportId { get; private set; }
     public long BankAccountId { get; private set; }
     public string? TrnUid { get; private set; }
@@ -24,10 +25,11 @@ public sealed class OfxStatement : AggregateRoot
 
     private OfxStatement() : base(0) { }  // EF Core
 
-    private OfxStatement(long importId, long bankAccountId, string? trnUid, string curDef,
+    private OfxStatement(long userId, long importId, long bankAccountId, string? trnUid, string curDef,
         DateTime? dtServer, string? language, short? statusCode, string? statusSeverity,
         DateTime? dtStart, DateTime? dtEnd) : base(0)
     {
+        UserId = userId;
         ImportId = importId;
         BankAccountId = bankAccountId;
         TrnUid = trnUid;
@@ -42,10 +44,14 @@ public sealed class OfxStatement : AggregateRoot
     }
 
     public static Result<OfxStatement> Create(
-        long importId, long bankAccountId, string? trnUid, string curDef,
+        long userId, long importId, long bankAccountId, string? trnUid, string curDef,
         DateTime? dtServer, string? language, short? statusCode, string? statusSeverity,
         DateTime? dtStart, DateTime? dtEnd)
     {
+        if (userId <= 0)
+            return Result.Failure<OfxStatement>(
+                new Error("OfxStatement.InvalidUser", "A valid user is required."));
+
         if (importId <= 0)
             return Result.Failure<OfxStatement>(
                 new Error("OfxStatement.InvalidImport", "A valid import is required."));
@@ -58,7 +64,7 @@ public sealed class OfxStatement : AggregateRoot
             return Result.Failure<OfxStatement>(
                 new Error("OfxStatement.InvalidCurDef", "Currency must be a 3-character ISO code."));
 
-        return Result.Success(new OfxStatement(importId, bankAccountId, trnUid, curDef.ToUpperInvariant(),
+        return Result.Success(new OfxStatement(userId, importId, bankAccountId, trnUid, curDef.ToUpperInvariant(),
             dtServer, language, statusCode, statusSeverity, dtStart, dtEnd));
     }
 }

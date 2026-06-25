@@ -13,6 +13,7 @@ internal sealed class BankAccountConfiguration : IEntityTypeConfiguration<BankAc
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).UseIdentityColumn();
 
+        builder.Property(x => x.UserId).HasColumnName("UserId").IsRequired();
         builder.Property(x => x.FinancialInstitutionId).HasColumnName("FinancialInstitutionId").IsRequired();
         builder.Property(x => x.BankId).HasColumnName("BankId").HasMaxLength(20).IsRequired();
         builder.Property(x => x.BranchId).HasColumnName("BranchId").HasMaxLength(20);
@@ -22,14 +23,20 @@ internal sealed class BankAccountConfiguration : IEntityTypeConfiguration<BankAc
         builder.Property(x => x.CreatedAt).HasColumnName("CreatedAt").HasColumnType("datetime2").IsRequired();
         builder.Property(x => x.UpdatedAt).HasColumnName("UpdatedAt").HasColumnType("datetime2").IsRequired();
 
-        builder.HasIndex(x => new { x.BankId, x.BranchId, x.AcctId })
+        builder.HasIndex(x => new { x.UserId, x.BankId, x.BranchId, x.AcctId })
             .IsUnique()
-            .HasDatabaseName("UQ_BankAccounts_BankId_BranchId_AcctId");
+            .HasDatabaseName("UQ_BankAccounts_User_BankId_BranchId_AcctId");
 
         builder.HasOne<FinancialInstitution>()
             .WithMany()
             .HasForeignKey(x => x.FinancialInstitutionId)
             .HasConstraintName("FK_BankAccounts_FinancialInstitutions")
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .HasConstraintName("FK_BankAccounts_Users")
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

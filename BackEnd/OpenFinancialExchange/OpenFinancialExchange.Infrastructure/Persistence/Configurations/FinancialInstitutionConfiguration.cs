@@ -15,6 +15,10 @@ internal sealed class FinancialInstitutionConfiguration : IEntityTypeConfigurati
             .HasColumnName("Id")
             .UseIdentityColumn();
 
+        builder.Property(x => x.UserId)
+            .HasColumnName("UserId")
+            .IsRequired();
+
         builder.Property(x => x.BankId)
             .HasColumnName("BankId")
             .HasMaxLength(20)
@@ -42,8 +46,14 @@ internal sealed class FinancialInstitutionConfiguration : IEntityTypeConfigurati
             .HasColumnType("datetime2")
             .IsRequired();
 
-        builder.HasIndex(x => new { x.BankId, x.Fid })
+        builder.HasIndex(x => new { x.UserId, x.BankId, x.Fid })
             .IsUnique()
-            .HasDatabaseName("UQ_FinancialInstitutions_BankId_Fid");
+            .HasDatabaseName("UQ_FinancialInstitutions_User_BankId_Fid");
+
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .HasConstraintName("FK_FinancialInstitutions_Users")
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

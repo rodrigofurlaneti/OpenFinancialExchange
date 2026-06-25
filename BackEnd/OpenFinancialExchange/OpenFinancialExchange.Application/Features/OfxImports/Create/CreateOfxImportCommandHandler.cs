@@ -1,3 +1,4 @@
+using OpenFinancialExchange.Application.Abstractions;
 using OpenFinancialExchange.Application.Abstractions.Messaging;
 using OpenFinancialExchange.Application.Common.Parsers;
 using OpenFinancialExchange.Domain.Entities;
@@ -10,11 +11,15 @@ internal sealed class CreateOfxImportCommandHandler(
     IOfxImportRepository repository,
     IOfxStatementRepository statementRepository,
     IOfxTransactionRepository transactionRepository,
+    ICurrentUserService currentUser,
     IUnitOfWork unitOfWork)
     : ICommandHandler<CreateOfxImportCommand, long>
 {
     public async Task<Result<long>> Handle(CreateOfxImportCommand request, CancellationToken cancellationToken)
     {
+        if (currentUser.UserId is not { } userId)
+            return Result.Failure<long>(new Error("Auth.Unauthorized", "No authenticated user."));
+
         // 1. Duplicate check
         var alreadyImported = await repository.ExistsByHashAsync(request.FileHash, cancellationToken);
         if (alreadyImported)
@@ -22,7 +27,7 @@ internal sealed class CreateOfxImportCommandHandler(
                 "This file has already been imported (duplicate SHA-256 hash)."));
 
         // 2. Create and persist the raw import record
-        var importResult = OfxImport.Create(request.FileName, request.FileHash, request.OfxHeaderVersion,
+        var importResult = OfxImport.Create(userId, request.FileName, request.FileHash, request.OfxHeaderVersion,
             request.OfxVersion, request.OfxData, request.Encoding, request.Charset,
             request.Security, request.Compression, request.OldFileUid, request.NewFileUid);
 
@@ -44,7 +49,7 @@ internal sealed class CreateOfxImportCommandHandler(
 
         // 5. Create and persist the statement
         var stmtResult = OfxStatement.Create(
-            importId, request.BankAccountId.Value, parsed.TrnUid, parsed.CurDef,
+            userId, importId, request.BankAccountId.Value, parsed.TrnUid, parsed.CurDef,
             parsed.DtServer, parsed.Language, parsed.StatusCode, parsed.StatusSeverity,
             parsed.DtStart, parsed.DtEnd);
 
@@ -75,7 +80,7 @@ internal sealed class CreateOfxImportCommandHandler(
                 continue;
 
             var trnResult = OfxTransaction.Create(
-                statementId, t.TrnType, t.DtPosted, t.TrnAmt,
+                userId, statementId, t.TrnType, t.DtPosted, t.TrnAmt,
                 t.FitId, t.Name, t.Memo, t.CheckNum);
 
             if (trnResult.IsSuccess)

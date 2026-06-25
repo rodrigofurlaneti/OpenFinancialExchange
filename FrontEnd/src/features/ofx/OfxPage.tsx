@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { useOfxImports, useOfxStatements, useTransactionsByStatement } from './hooks/useOfx'
+import { useOfxImports, useOfxStatements, useTransactionsByStatement, useAssignCategory } from './hooks/useOfx'
+import { useCategories } from '../categories/hooks/useCategories'
 import { ImportModal } from './components/ImportModal'
 import { TransactionTable } from './components/TransactionTable'
 import { EmptyState } from '../../shared/components/EmptyState'
@@ -12,6 +13,8 @@ export function OfxPage() {
   const [showImportModal, setShowImportModal] = useState(false)
 
   const { data: transactions = [], isLoading: loadingTxns } = useTransactionsByStatement(selectedStatementId)
+  const { data: categories = [] } = useCategories()
+  const assignCategory = useAssignCategory()
 
   const selectedStatement = statements?.find((s) => s.id === selectedStatementId)
 
@@ -120,7 +123,15 @@ export function OfxPage() {
                 </span>
               </div>
               <div className="glass-card overflow-hidden">
-                <TransactionTable transactions={transactions} isLoading={loadingTxns} />
+                <TransactionTable
+                  transactions={transactions}
+                  isLoading={loadingTxns}
+                  categories={categories}
+                  isAssigning={assignCategory.isPending}
+                  onAssignCategory={(transactionId, categoryId) =>
+                    assignCategory.mutate({ transactionId, categoryId })
+                  }
+                />
               </div>
             </>
           ) : (

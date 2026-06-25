@@ -4,6 +4,7 @@ namespace OpenFinancialExchange.Domain.Entities;
 
 public sealed class OfxTransaction : Entity
 {
+    public long UserId { get; private set; }
     public long StatementId { get; private set; }
     public string TrnType { get; private set; } = null!;
     public DateTime DtPosted { get; private set; }
@@ -12,13 +13,15 @@ public sealed class OfxTransaction : Entity
     public string? Name { get; private set; }
     public string? Memo { get; private set; }
     public string? CheckNum { get; private set; }
+    public long? CategoryId { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
     private OfxTransaction() : base(0) { }  // EF Core
 
-    private OfxTransaction(long statementId, string trnType, DateTime dtPosted, decimal trnAmt,
+    private OfxTransaction(long userId, long statementId, string trnType, DateTime dtPosted, decimal trnAmt,
         string? fitId, string? name, string? memo, string? checkNum) : base(0)
     {
+        UserId = userId;
         StatementId = statementId;
         TrnType = trnType;
         DtPosted = dtPosted;
@@ -37,9 +40,13 @@ public sealed class OfxTransaction : Entity
     ];
 
     public static Result<OfxTransaction> Create(
-        long statementId, string trnType, DateTime dtPosted, decimal trnAmt,
+        long userId, long statementId, string trnType, DateTime dtPosted, decimal trnAmt,
         string? fitId, string? name, string? memo, string? checkNum)
     {
+        if (userId <= 0)
+            return Result.Failure<OfxTransaction>(
+                new Error("OfxTransaction.InvalidUser", "A valid user is required."));
+
         if (statementId <= 0)
             return Result.Failure<OfxTransaction>(
                 new Error("OfxTransaction.InvalidStatement", "A valid statement is required."));
@@ -48,7 +55,13 @@ public sealed class OfxTransaction : Entity
             return Result.Failure<OfxTransaction>(
                 new Error("OfxTransaction.InvalidTrnType", "Invalid transaction type."));
 
-        return Result.Success(new OfxTransaction(statementId, trnType!.ToUpperInvariant(), dtPosted,
+        return Result.Success(new OfxTransaction(userId, statementId, trnType!.ToUpperInvariant(), dtPosted,
             trnAmt, fitId, name, memo, checkNum));
     }
+
+    /// <summary>
+    /// Atribui (ou remove, com <paramref name="categoryId"/> = null) a categoria.
+    /// Única mutação permitida sobre o dado OFX importado.
+    /// </summary>
+    public void AssignCategory(long? categoryId) => CategoryId = categoryId;
 }

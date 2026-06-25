@@ -10,4 +10,6 @@ public sealed record OfxTransactionResponse(
     string? Name,
     string? Memo,
     string? CheckNum,
+    long? CategoryId,
+    string? CategoryName,
     DateTime CreatedAt);

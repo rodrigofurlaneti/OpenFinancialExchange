@@ -33,3 +33,12 @@ export function useTransactionsByBankAccount(bankAccountId: number | null) {
     enabled: bankAccountId !== null,
   })
 }
+
+export function useAssignCategory() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ transactionId, categoryId }: { transactionId: number; categoryId: number | null }) =>
+      ofxApi.assignCategory(transactionId, categoryId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['ofx-transactions'] }),
+  })
+}

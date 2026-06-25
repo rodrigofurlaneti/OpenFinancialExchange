@@ -13,6 +13,7 @@ internal sealed class OfxStatementConfiguration : IEntityTypeConfiguration<OfxSt
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).UseIdentityColumn();
 
+        builder.Property(x => x.UserId).HasColumnName("UserId").IsRequired();
         builder.Property(x => x.ImportId).IsRequired();
         builder.Property(x => x.BankAccountId).IsRequired();
         builder.Property(x => x.TrnUid).HasMaxLength(36);
@@ -24,6 +25,12 @@ internal sealed class OfxStatementConfiguration : IEntityTypeConfiguration<OfxSt
         builder.Property(x => x.DtStart).HasColumnType("datetime2");
         builder.Property(x => x.DtEnd).HasColumnType("datetime2");
         builder.Property(x => x.CreatedAt).HasColumnType("datetime2").IsRequired();
+
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .HasConstraintName("FK_OfxStatements_Users")
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne<OfxImport>()
             .WithMany()

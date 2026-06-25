@@ -4,6 +4,7 @@ namespace OpenFinancialExchange.Domain.Entities;
 
 public sealed class OfxImport : AggregateRoot
 {
+    public long UserId { get; private set; }
     public string FileName { get; private set; } = null!;
     public string FileHash { get; private set; } = null!;
     public short? OfxHeaderVersion { get; private set; }
@@ -19,10 +20,11 @@ public sealed class OfxImport : AggregateRoot
 
     private OfxImport() : base(0) { }  // EF Core
 
-    private OfxImport(string fileName, string fileHash, short? ofxHeaderVersion, short? ofxVersion,
+    private OfxImport(long userId, string fileName, string fileHash, short? ofxHeaderVersion, short? ofxVersion,
         string? ofxData, string? encoding, string? charset, string? security, string? compression,
         string? oldFileUid, string? newFileUid) : base(0)
     {
+        UserId = userId;
         FileName = fileName;
         FileHash = fileHash;
         OfxHeaderVersion = ofxHeaderVersion;
@@ -37,10 +39,14 @@ public sealed class OfxImport : AggregateRoot
         ImportedAt = DateTime.UtcNow;
     }
 
-    public static Result<OfxImport> Create(string fileName, string fileHash, short? ofxHeaderVersion,
+    public static Result<OfxImport> Create(long userId, string fileName, string fileHash, short? ofxHeaderVersion,
         short? ofxVersion, string? ofxData, string? encoding, string? charset, string? security,
         string? compression, string? oldFileUid, string? newFileUid)
     {
+        if (userId <= 0)
+            return Result.Failure<OfxImport>(
+                new Error("OfxImport.InvalidUser", "A valid user is required."));
+
         if (string.IsNullOrWhiteSpace(fileName))
             return Result.Failure<OfxImport>(
                 new Error("OfxImport.EmptyFileName", "File name is required."));
@@ -49,7 +55,7 @@ public sealed class OfxImport : AggregateRoot
             return Result.Failure<OfxImport>(
                 new Error("OfxImport.InvalidFileHash", "File hash must be a 64-character SHA-256 string."));
 
-        return Result.Success(new OfxImport(fileName.Trim(), fileHash, ofxHeaderVersion, ofxVersion,
+        return Result.Success(new OfxImport(userId, fileName.Trim(), fileHash, ofxHeaderVersion, ofxVersion,
             ofxData, encoding, charset, security, compression, oldFileUid, newFileUid));
     }
 }

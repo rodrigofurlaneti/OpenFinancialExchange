@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OpenFinancialExchange.Application.Abstractions;
+using OpenFinancialExchange.API.Services;
 using OpenFinancialExchange.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration);
+
+// Current user (multi-tenant isolation) — resolves the JWT 'sub' claim per request
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 // FluentValidation
 builder.Services.AddFluentValidationAutoValidation();

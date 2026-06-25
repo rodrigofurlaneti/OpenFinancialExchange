@@ -13,6 +13,7 @@ internal sealed class OfxImportConfiguration : IEntityTypeConfiguration<OfxImpor
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).UseIdentityColumn();
 
+        builder.Property(x => x.UserId).HasColumnName("UserId").IsRequired();
         builder.Property(x => x.FileName).HasMaxLength(255).IsRequired();
         builder.Property(x => x.FileHash).HasMaxLength(64).IsRequired();
         builder.Property(x => x.OfxHeaderVersion).HasColumnName("OfxHeaderVersion");
@@ -26,8 +27,14 @@ internal sealed class OfxImportConfiguration : IEntityTypeConfiguration<OfxImpor
         builder.Property(x => x.NewFileUid).HasMaxLength(50);
         builder.Property(x => x.ImportedAt).HasColumnType("datetime2").IsRequired();
 
-        builder.HasIndex(x => x.FileHash)
+        builder.HasIndex(x => new { x.UserId, x.FileHash })
             .IsUnique()
-            .HasDatabaseName("UQ_OfxImports_FileHash");
+            .HasDatabaseName("UQ_OfxImports_User_FileHash");
+
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .HasConstraintName("FK_OfxImports_Users")
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

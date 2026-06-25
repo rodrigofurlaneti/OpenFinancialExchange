@@ -8,7 +8,7 @@ public class FinancialInstitutionTests
     [Fact]
     public void Create_WithValidData_ShouldSucceed()
     {
-        var result = FinancialInstitution.Create("237", "Bradesco", "237");
+        var result = FinancialInstitution.Create(1, "237", "Bradesco", "237");
 
         result.IsSuccess.Should().BeTrue();
         result.Value.BankId.Should().Be("237");
@@ -22,7 +22,7 @@ public class FinancialInstitutionTests
     [InlineData("   ")]
     public void Create_WithEmptyBankId_ShouldFail(string bankId)
     {
-        var result = FinancialInstitution.Create(bankId, "Bradesco", null);
+        var result = FinancialInstitution.Create(1, bankId, "Bradesco", null);
 
         result.IsFailure.Should().BeTrue();
         result.Error.Code.Should().Be("FinancialInstitution.EmptyBankId");
@@ -31,7 +31,7 @@ public class FinancialInstitutionTests
     [Fact]
     public void Create_WithBankIdTooLong_ShouldFail()
     {
-        var result = FinancialInstitution.Create(new string('X', 21), null, null);
+        var result = FinancialInstitution.Create(1, new string('X', 21), null, null);
 
         result.IsFailure.Should().BeTrue();
         result.Error.Code.Should().Be("FinancialInstitution.BankIdTooLong");
@@ -40,7 +40,7 @@ public class FinancialInstitutionTests
     [Fact]
     public void UpdateDetails_ShouldUpdateOrgNameAndFid()
     {
-        var fi = FinancialInstitution.Create("237", null, null).Value;
+        var fi = FinancialInstitution.Create(1, "237", null, null).Value;
 
         var result = fi.UpdateDetails("Bradesco", "237");
 
@@ -52,7 +52,7 @@ public class FinancialInstitutionTests
     [Fact]
     public void Deactivate_ShouldSetIsActiveFalse()
     {
-        var fi = FinancialInstitution.Create("001", null, null).Value;
+        var fi = FinancialInstitution.Create(1, "001", null, null).Value;
 
         fi.Deactivate();
 

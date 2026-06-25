@@ -5,6 +5,7 @@ import { LoginPage } from '../../features/auth/LoginPage'
 import { DashboardPage } from '../../features/dashboard/DashboardPage'
 import { FinancialInstitutionsPage } from '../../features/financial-institutions/FinancialInstitutionsPage'
 import { BankAccountsPage } from '../../features/bank-accounts/BankAccountsPage'
+import { CategoriesPage } from '../../features/categories/CategoriesPage'
 import { OfxPage } from '../../features/ofx/OfxPage'
 
 const router = createBrowserRouter([
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
       {
         path: '/bank-accounts',
         element: <Layout><BankAccountsPage /></Layout>,
+      },
+      {
+        path: '/categories',
+        element: <Layout><CategoriesPage /></Layout>,
       },
       {
         path: '/ofx',

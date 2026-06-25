@@ -4,6 +4,7 @@ namespace OpenFinancialExchange.Domain.Entities;
 
 public sealed class FinancialInstitution : AggregateRoot
 {
+    public long UserId { get; private set; }
     public string BankId { get; private set; } = null!;
     public string? OrgName { get; private set; }
     public string? Fid { get; private set; }
@@ -13,8 +14,9 @@ public sealed class FinancialInstitution : AggregateRoot
 
     private FinancialInstitution() : base(0) { }  // EF Core
 
-    private FinancialInstitution(string bankId, string? orgName, string? fid) : base(0)
+    private FinancialInstitution(long userId, string bankId, string? orgName, string? fid) : base(0)
     {
+        UserId = userId;
         BankId = bankId;
         OrgName = orgName;
         Fid = fid;
@@ -23,8 +25,12 @@ public sealed class FinancialInstitution : AggregateRoot
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public static Result<FinancialInstitution> Create(string bankId, string? orgName, string? fid)
+    public static Result<FinancialInstitution> Create(long userId, string bankId, string? orgName, string? fid)
     {
+        if (userId <= 0)
+            return Result.Failure<FinancialInstitution>(
+                new Error("FinancialInstitution.InvalidUser", "A valid user is required."));
+
         if (string.IsNullOrWhiteSpace(bankId))
             return Result.Failure<FinancialInstitution>(
                 new Error("FinancialInstitution.EmptyBankId", "Bank ID is required."));
@@ -33,7 +39,7 @@ public sealed class FinancialInstitution : AggregateRoot
             return Result.Failure<FinancialInstitution>(
                 new Error("FinancialInstitution.BankIdTooLong", "Bank ID must not exceed 20 characters."));
 
-        return Result.Success(new FinancialInstitution(bankId.Trim(), orgName?.Trim(), fid?.Trim()));
+        return Result.Success(new FinancialInstitution(userId, bankId.Trim(), orgName?.Trim(), fid?.Trim()));
     }
 
     public Result UpdateDetails(string? orgName, string? fid)

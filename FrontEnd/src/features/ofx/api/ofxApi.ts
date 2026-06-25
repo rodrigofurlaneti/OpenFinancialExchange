@@ -22,4 +22,6 @@ export const ofxApi = {
     api.get<OfxTransactionResponse[]>(`/ofxtransactions/by-statement/${statementId}`).then((r) => r.data),
   getByBankAccount: (bankAccountId: number) =>
     api.get<OfxTransactionResponse[]>(`/ofxtransactions/by-account/${bankAccountId}`).then((r) => r.data),
+  assignCategory: (transactionId: number, categoryId: number | null) =>
+    api.patch(`/ofxtransactions/${transactionId}/category`, { categoryId }),
 }
