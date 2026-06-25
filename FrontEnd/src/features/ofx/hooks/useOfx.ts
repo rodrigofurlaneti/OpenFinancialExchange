@@ -42,3 +42,17 @@ export function useAssignCategory() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['ofx-transactions'] }),
   })
 }
+
+export function useReprocessAll() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => ofxApi.reprocessAll(),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['ofx-imports'] })
+      qc.invalidateQueries({ queryKey: ['ofx-statements'] })
+      qc.invalidateQueries({ queryKey: ['ofx-transactions'] })
+      qc.invalidateQueries({ queryKey: ['bank-accounts'] })
+      qc.invalidateQueries({ queryKey: ['financial-institutions'] })
+    },
+  })
+}

@@ -1,10 +1,17 @@
 import { useState } from 'react'
-import { useOfxImports, useOfxStatements, useTransactionsByStatement, useAssignCategory } from './hooks/useOfx'
+import {
+  useOfxImports,
+  useOfxStatements,
+  useTransactionsByStatement,
+  useAssignCategory,
+  useReprocessAll,
+} from './hooks/useOfx'
 import { useCategories } from '../categories/hooks/useCategories'
 import { ImportModal } from './components/ImportModal'
 import { TransactionTable } from './components/TransactionTable'
 import { EmptyState } from '../../shared/components/EmptyState'
-import { FileUp, Plus, FileText, ChevronRight } from 'lucide-react'
+import { extractErrorMessage } from '../../core/api/client'
+import { FileUp, Plus, FileText, ChevronRight, RefreshCw } from 'lucide-react'
 
 export function OfxPage() {
   const { data: imports, isLoading: loadingImports } = useOfxImports()
@@ -15,8 +22,18 @@ export function OfxPage() {
   const { data: transactions = [], isLoading: loadingTxns } = useTransactionsByStatement(selectedStatementId)
   const { data: categories = [] } = useCategories()
   const assignCategory = useAssignCategory()
+  const reprocessAll = useReprocessAll()
 
   const selectedStatement = statements?.find((s) => s.id === selectedStatementId)
+
+  function handleReprocessAll() {
+    if (!window.confirm('Reprocessar todas as importações? Os extratos e transações serão recriados a partir do arquivo OFX salvo.')) return
+    setSelectedStatementId(null)
+    reprocessAll.mutate(undefined, {
+      onSuccess: (r) =>
+        window.alert(`Reprocessamento concluído: ${r.importsProcessed} importação(ões), ${r.transactionsCreated} transação(ões) criadas.`),
+    })
+  }
 
   function formatDate(d: string | null) {
     if (!d) return '—'
@@ -25,19 +42,36 @@ export function OfxPage() {
 
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-100">Importações OFX</h1>
           <p className="text-sm text-slate-500 mt-0.5">Importe extratos e visualize transações.</p>
         </div>
-        <button onClick={() => setShowImportModal(true)} className="btn-primary flex items-center gap-2">
-          <Plus size={16} /> Importar OFX
-        </button>
+        <div className="flex items-center gap-2">
+          {imports && imports.length > 0 && (
+            <button
+              onClick={handleReprocessAll}
+              disabled={reprocessAll.isPending}
+              className="btn-secondary flex items-center gap-2 disabled:opacity-50"
+              title="Recria extratos e transações a partir do OFX salvo"
+            >
+              <RefreshCw size={16} className={reprocessAll.isPending ? 'animate-spin' : ''} />
+              {reprocessAll.isPending ? 'Reprocessando…' : 'Reprocessar tudo'}
+            </button>
+          )}
+          <button onClick={() => setShowImportModal(true)} className="btn-primary flex items-center gap-2">
+            <Plus size={16} /> Importar OFX
+          </button>
+        </div>
       </div>
 
+      {reprocessAll.isError && (
+        <div className="mb-4 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+          {extractErrorMessage(reprocessAll.error)}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Imports list */}
         <div className="xl:col-span-1 space-y-4">
           <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Arquivos Importados</h2>
 
@@ -72,7 +106,6 @@ export function OfxPage() {
             </div>
           ))}
 
-          {/* Statements list */}
           {statements && statements.length > 0 && (
             <>
               <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider pt-2">Extratos</h2>
@@ -110,7 +143,6 @@ export function OfxPage() {
           )}
         </div>
 
-        {/* Transactions panel */}
         <div className="xl:col-span-2">
           {selectedStatement ? (
             <>

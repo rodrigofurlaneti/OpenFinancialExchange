@@ -1,11 +1,9 @@
-// ─── Shared API envelope ────────────────────────────────────────────────────
 export interface ApiError {
   title: string;
   detail: string;
   status: number;
 }
 
-// ─── Auth ───────────────────────────────────────────────────────────────────
 export interface LoginRequest {
   email: string;
   password: string;
@@ -15,7 +13,6 @@ export interface LoginResponse {
   token: string;
 }
 
-// ─── Financial Institutions ─────────────────────────────────────────────────
 export interface FinancialInstitutionResponse {
   id: number;
   bankId: string;
@@ -37,7 +34,6 @@ export interface UpdateFinancialInstitutionRequest {
   fid: string | null;
 }
 
-// ─── Bank Accounts ──────────────────────────────────────────────────────────
 export type AcctType = 'CHECKING' | 'SAVINGS' | 'MONEYMRKT' | 'CREDITLINE' | 'CD' | 'OTHER';
 
 export interface BankAccountResponse {
@@ -64,7 +60,6 @@ export interface UpdateBankAccountRequest {
   acctType: AcctType;
 }
 
-// ─── OFX Imports ────────────────────────────────────────────────────────────
 export interface OfxImportResponse {
   id: number;
   fileName: string;
@@ -91,7 +86,6 @@ export interface CreateOfxImportRequest {
   newFileUid: string | null;
 }
 
-// ─── OFX Statements ─────────────────────────────────────────────────────────
 export interface OfxStatementResponse {
   id: number;
   importId: number;
@@ -107,7 +101,6 @@ export interface OfxStatementResponse {
   createdAt: string;
 }
 
-// ─── OFX Transactions ───────────────────────────────────────────────────────
 export interface OfxTransactionResponse {
   id: number;
   statementId: number;
@@ -127,7 +120,6 @@ export interface AssignCategoryRequest {
   categoryId: number | null;
 }
 
-// ─── Categories ─────────────────────────────────────────────────────────────
 export type CategoryKind = 'CREDIT' | 'DEBIT' | 'BOTH';
 
 export interface CategoryResponse {
@@ -136,6 +128,8 @@ export interface CategoryResponse {
   kind: CategoryKind;
   color: string;
   isSystem: boolean;
+  isInternal: boolean;
+  keywords: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -145,10 +139,14 @@ export interface CreateCategoryRequest {
   name: string;
   kind: CategoryKind;
   color: string;
+  isInternal: boolean;
+  keywords: string;
 }
 
 export interface UpdateCategoryRequest {
   name: string;
   kind: CategoryKind;
   color: string;
+  isInternal: boolean;
+  keywords: string;
 }

@@ -78,7 +78,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// In Development the Vite proxy calls the HTTP endpoint (localhost:5044); forcing an
+// HTTPS redirect sends a 307 to the untrusted dev cert on :7177 and breaks the SPA.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

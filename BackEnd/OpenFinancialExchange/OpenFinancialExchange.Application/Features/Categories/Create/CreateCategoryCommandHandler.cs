@@ -22,7 +22,7 @@ internal sealed class CreateCategoryCommandHandler(
             return Result.Failure<long>(new Error("Category.AlreadyExists",
                 $"A category named '{request.Name}' already exists."));
 
-        var result = Category.Create(userId, request.Name, request.Kind, request.Color);
+        var result = Category.Create(userId, request.Name, request.Kind, request.Color, isInternal: request.IsInternal, keywords: request.Keywords);
         if (result.IsFailure)
             return Result.Failure<long>(result.Error);
 

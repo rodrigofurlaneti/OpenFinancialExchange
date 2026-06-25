@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OpenFinancialExchange.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using OpenFinancialExchange.Infrastructure.Persistence;
 namespace OpenFinancialExchange.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260625183300_AddCategoryIsInternal")]
+    partial class AddCategoryIsInternal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -142,11 +145,6 @@ namespace OpenFinancialExchange.Infrastructure.Migrations
                     b.Property<bool>("IsSystem")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Keywords")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
                     b.Property<string>("Kind")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -182,7 +180,6 @@ namespace OpenFinancialExchange.Infrastructure.Migrations
                             IsActive = true,
                             IsInternal = false,
                             IsSystem = true,
-                            Keywords = "PANIFICADORA\nPADARIA\nRESTAURANTE\nSUPERMERCADO\nMERCADO\nHORTIFRUTI\nACOUGUE\nLANCHONETE\nIFOOD\nRAPPI",
                             Kind = "DEBIT",
                             Name = "Alimentação",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -195,7 +192,6 @@ namespace OpenFinancialExchange.Infrastructure.Migrations
                             IsActive = true,
                             IsInternal = false,
                             IsSystem = true,
-                            Keywords = "POSTO\nCOMBUSTIVEL\nGASOLINA\nESTACIONAMENTO\nUBER\n99 TECNOLOGIA\n99POP\nPEDAGIO\nONIBUS\nMETRO",
                             Kind = "DEBIT",
                             Name = "Transporte",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -208,7 +204,6 @@ namespace OpenFinancialExchange.Infrastructure.Migrations
                             IsActive = true,
                             IsInternal = false,
                             IsSystem = true,
-                            Keywords = "ALUGUEL\nCONDOMINIO\nENERGIA\nENEL\nCEMIG\nSABESP\nAGUA\nINTERNET\nVIVO FIBRA\nCLARO NET",
                             Kind = "DEBIT",
                             Name = "Moradia",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -221,7 +216,6 @@ namespace OpenFinancialExchange.Infrastructure.Migrations
                             IsActive = true,
                             IsInternal = false,
                             IsSystem = true,
-                            Keywords = "FARMACIA\nDROGARIA\nDROGASIL\nRAIA\nPACHECO\nHOSPITAL\nCLINICA\nLABORATORIO\nUNIMED\nDENTISTA",
                             Kind = "DEBIT",
                             Name = "Saúde",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -234,7 +228,6 @@ namespace OpenFinancialExchange.Infrastructure.Migrations
                             IsActive = true,
                             IsInternal = false,
                             IsSystem = true,
-                            Keywords = "ESCOLA\nCOLEGIO\nFACULDADE\nUNIVERSIDADE\nCURSO\nUDEMY\nALURA\nLIVRARIA",
                             Kind = "DEBIT",
                             Name = "Educação",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -247,7 +240,6 @@ namespace OpenFinancialExchange.Infrastructure.Migrations
                             IsActive = true,
                             IsInternal = false,
                             IsSystem = true,
-                            Keywords = "CINEMA\nNETFLIX\nSPOTIFY\nDISNEY\nHBO\nAMAZON PRIME\nINGRESSO\nTEATRO\nSTEAM",
                             Kind = "DEBIT",
                             Name = "Lazer",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -260,7 +252,6 @@ namespace OpenFinancialExchange.Infrastructure.Migrations
                             IsActive = true,
                             IsInternal = false,
                             IsSystem = true,
-                            Keywords = "MAGAZINE\nMAGALU\nAMERICANAS\nMERCADO LIVRE\nMERCADOLIVRE\nAMAZON\nSHOPEE\nALIEXPRESS\nSHOPPING\nRENNER\nRIACHUELO",
                             Kind = "DEBIT",
                             Name = "Compras",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -273,7 +264,6 @@ namespace OpenFinancialExchange.Infrastructure.Migrations
                             IsActive = true,
                             IsInternal = false,
                             IsSystem = true,
-                            Keywords = "BARBEARIA\nSALAO\nLAVANDERIA\nASSINATURA",
                             Kind = "DEBIT",
                             Name = "Serviços",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -286,7 +276,6 @@ namespace OpenFinancialExchange.Infrastructure.Migrations
                             IsActive = true,
                             IsInternal = false,
                             IsSystem = true,
-                            Keywords = "SALARIO\nFOLHA PGTO\nFOLHA DE PAGAMENTO\nPROVENTOS\nREMUNERACAO\nORDENADO",
                             Kind = "CREDIT",
                             Name = "Salário",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -299,7 +288,6 @@ namespace OpenFinancialExchange.Infrastructure.Migrations
                             IsActive = true,
                             IsInternal = true,
                             IsSystem = true,
-                            Keywords = "RESGATE\nAPLICACAO\nAPLICACAO INV\nINV FAC\nINVEST FACIL\nINVESTIMENTO FACIL\nCDB\nTESOURO DIRETO\nFUNDO",
                             Kind = "BOTH",
                             Name = "Investimentos",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -312,7 +300,6 @@ namespace OpenFinancialExchange.Infrastructure.Migrations
                             IsActive = true,
                             IsInternal = true,
                             IsSystem = true,
-                            Keywords = "",
                             Kind = "BOTH",
                             Name = "Transferências",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -325,7 +312,6 @@ namespace OpenFinancialExchange.Infrastructure.Migrations
                             IsActive = true,
                             IsInternal = false,
                             IsSystem = true,
-                            Keywords = "TARIFA\nCESTA\nANUIDADE\nIOF\nPACOTE SERVICOS\nMANUTENCAO CONTA",
                             Kind = "DEBIT",
                             Name = "Tarifas Bancárias",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
@@ -338,7 +324,6 @@ namespace OpenFinancialExchange.Infrastructure.Migrations
                             IsActive = true,
                             IsInternal = false,
                             IsSystem = true,
-                            Keywords = "",
                             Kind = "BOTH",
                             Name = "Outros",
                             UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)

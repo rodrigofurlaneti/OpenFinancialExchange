@@ -1,5 +1,6 @@
 using OpenFinancialExchange.Application.Abstractions;
 using OpenFinancialExchange.Application.Abstractions.Messaging;
+using OpenFinancialExchange.Application.Common;
 using OpenFinancialExchange.Application.Common.Parsers;
 using OpenFinancialExchange.Domain.Entities;
 using OpenFinancialExchange.Domain.Primitives;
@@ -11,6 +12,7 @@ internal sealed class CreateOfxImportCommandHandler(
     IOfxImportRepository repository,
     IOfxStatementRepository statementRepository,
     IOfxTransactionRepository transactionRepository,
+    ICategoryRepository categoryRepository,
     ICurrentUserService currentUser,
     IUnitOfWork unitOfWork)
     : ICommandHandler<CreateOfxImportCommand, long>
@@ -71,20 +73,32 @@ internal sealed class CreateOfxImportCommandHandler(
 
         var existingFitIds = await transactionRepository
             .GetExistingFitIdsAsync(request.BankAccountId.Value, incomingFitIds, cancellationToken);
+        // Dedupe against the DB AND within this batch (some OFX files repeat the same FitId).
+        var seenFitIds = new HashSet<string>(existingFitIds, StringComparer.Ordinal);
+
+        // Auto-categorize by keyword rules (food, transport, internal movements, ...).
+        var categories = await categoryRepository.GetAllAsync(cancellationToken);
+        var categoryKeywords = categories.Select(c => (c.Id, (string?)c.Keywords)).ToList();
 
         var transactions = new List<OfxTransaction>(parsed.Transactions.Count);
         foreach (var t in parsed.Transactions)
         {
-            // Skip if FitId already exists in any statement for this account
-            if (t.FitId is not null && existingFitIds.Contains(t.FitId))
+            // Skip if FitId already exists in the DB or earlier in this same batch
+            if (t.FitId is not null && !seenFitIds.Add(t.FitId))
                 continue;
 
             var trnResult = OfxTransaction.Create(
                 userId, statementId, t.TrnType, t.DtPosted, t.TrnAmt,
                 t.FitId, t.Name, t.Memo, t.CheckNum);
 
-            if (trnResult.IsSuccess)
-                transactions.Add(trnResult.Value);
+            if (trnResult.IsFailure)
+                continue;
+
+            var matchedCategoryId = CategoryKeywordMatcher.Match(categoryKeywords, t.Name, t.Memo);
+            if (matchedCategoryId is not null)
+                trnResult.Value.AssignCategory(matchedCategoryId);
+
+            transactions.Add(trnResult.Value);
         }
 
         if (transactions.Count > 0)

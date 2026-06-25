@@ -24,7 +24,25 @@ public interface IOfxTransactionRepository
 public sealed record FinancialSummaryData(
     decimal TotalCredits,
     decimal TotalDebits,
+    decimal InternalCredits,
+    decimal InternalDebits,
     int TransactionCount,
-    IReadOnlyList<TypeSummaryData> ByType);
+    IReadOnlyList<TypeSummaryData> ByType,
+    IReadOnlyList<CategorySummaryData> ByCategory);
 
 public sealed record TypeSummaryData(string TrnType, decimal Total, int Count);
+
+/// <summary>
+/// Aggregated totals for one category within the period.
+/// <paramref name="CategoryId"/> is null for uncategorized transactions.
+/// Credit/Debit are kept separate so the UI can switch between expenses and income.
+/// <paramref name="IsInternal"/> marks transfers/investment movements excluded from totals.
+/// </summary>
+public sealed record CategorySummaryData(
+    long? CategoryId,
+    string CategoryName,
+    string? Color,
+    bool IsInternal,
+    decimal Credit,
+    decimal Debit,
+    int Count);

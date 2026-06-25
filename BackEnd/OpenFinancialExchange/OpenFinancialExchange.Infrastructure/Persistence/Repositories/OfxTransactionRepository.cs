@@ -69,16 +69,54 @@ internal sealed class OfxTransactionRepository(AppDbContext context) : IOfxTrans
             .Where(t => t.DtPosted >= from && t.DtPosted <= to)
             .ToListAsync(ct);
 
-        var totalCredits = transactions.Where(t => t.TrnAmt > 0).Sum(t => t.TrnAmt);
-        var totalDebits  = transactions.Where(t => t.TrnAmt < 0).Sum(t => Math.Abs(t.TrnAmt));
-        var count        = transactions.Count;
+        // Category lookup (system + the current user's categories, already filtered by tenant).
+        var categories = await context.Categories
+            .AsNoTracking()
+            .Select(c => new { c.Id, c.Name, c.Color, c.IsInternal })
+            .ToListAsync(ct);
+        var categoryById = categories.ToDictionary(c => c.Id, c => (c.Name, c.Color, c.IsInternal));
 
-        var byType = transactions
+        bool IsInternalTxn(OfxTransaction t)
+            => t.CategoryId is { } id && categoryById.TryGetValue(id, out var c) && c.IsInternal;
+
+        var realTxns     = transactions.Where(t => !IsInternalTxn(t)).ToList();
+        var internalTxns = transactions.Where(IsInternalTxn).ToList();
+
+        // Totals reflect real income/expense; internal movements (transfers, Inv Fácil) are separate.
+        var totalCredits    = realTxns.Where(t => t.TrnAmt > 0).Sum(t => t.TrnAmt);
+        var totalDebits     = realTxns.Where(t => t.TrnAmt < 0).Sum(t => Math.Abs(t.TrnAmt));
+        var internalCredits = internalTxns.Where(t => t.TrnAmt > 0).Sum(t => t.TrnAmt);
+        var internalDebits  = internalTxns.Where(t => t.TrnAmt < 0).Sum(t => Math.Abs(t.TrnAmt));
+        var count           = transactions.Count;
+
+        var byType = realTxns
             .GroupBy(t => t.TrnType)
             .Select(g => new TypeSummaryData(g.Key, g.Sum(t => t.TrnAmt), g.Count()))
             .OrderByDescending(x => Math.Abs(x.Total))
             .ToList();
 
-        return new FinancialSummaryData(totalCredits, totalDebits, count, byType);
+        var byCategory = transactions
+            .GroupBy(t => t.CategoryId)
+            .Select(g =>
+            {
+                string name = "Sem categoria";
+                string? color = null;
+                var isInternal = false;
+                if (g.Key is { } id && categoryById.TryGetValue(id, out var info))
+                {
+                    name = info.Name;
+                    color = info.Color;
+                    isInternal = info.IsInternal;
+                }
+
+                var credit = g.Where(t => t.TrnAmt > 0).Sum(t => t.TrnAmt);
+                var debit  = g.Where(t => t.TrnAmt < 0).Sum(t => Math.Abs(t.TrnAmt));
+                return new CategorySummaryData(g.Key, name, color, isInternal, credit, debit, g.Count());
+            })
+            .OrderByDescending(x => x.Debit + x.Credit)
+            .ToList();
+
+        return new FinancialSummaryData(
+            totalCredits, totalDebits, internalCredits, internalDebits, count, byType, byCategory);
     }
 }

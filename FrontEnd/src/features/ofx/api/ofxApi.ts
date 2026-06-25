@@ -11,6 +11,12 @@ export const ofxApi = {
   getAllImports: () => api.get<OfxImportResponse[]>('/ofximports').then((r) => r.data),
   createImport: (data: CreateOfxImportRequest) =>
     api.post<number>('/ofximports', data).then((r) => r.data),
+  reprocessAll: () =>
+    api
+      .post<{ importsProcessed: number; transactionsCreated: number }>('/ofximports/reprocess-all')
+      .then((r) => r.data),
+  reprocessImport: (id: number) =>
+    api.post<{ transactionsCreated: number }>(`/ofximports/${id}/reprocess`).then((r) => r.data),
 
   // Statements
   getAllStatements: () => api.get<OfxStatementResponse[]>('/ofxstatements').then((r) => r.data),

@@ -30,4 +30,16 @@ internal sealed class OfxStatementRepository(AppDbContext context) : IOfxStateme
 
     public async Task AddAsync(OfxStatement ofxStatement, CancellationToken ct = default)
         => await context.OfxStatements.AddAsync(ofxStatement, ct);
+
+    public async Task RemoveByImportAsync(long importId, CancellationToken ct = default)
+    {
+        // Tracked load so SaveChanges issues the deletes; DB FK cascade removes
+        // the related OfxTransactions and OfxBalances.
+        var statements = await context.OfxStatements
+            .Where(x => x.ImportId == importId)
+            .ToListAsync(ct);
+
+        if (statements.Count > 0)
+            context.OfxStatements.RemoveRange(statements);
+    }
 }

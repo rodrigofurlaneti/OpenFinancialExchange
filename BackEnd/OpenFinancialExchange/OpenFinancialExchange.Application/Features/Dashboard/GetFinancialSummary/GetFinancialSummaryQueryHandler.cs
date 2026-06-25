@@ -16,8 +16,12 @@ internal sealed class GetFinancialSummaryQueryHandler(IOfxTransactionRepository 
             TotalCredits:     data.TotalCredits,
             TotalDebits:      data.TotalDebits,
             NetBalance:       data.TotalCredits - data.TotalDebits,
+            InternalCredits:  data.InternalCredits,
+            InternalDebits:   data.InternalDebits,
             TransactionCount: data.TransactionCount,
             ByType:           data.ByType.Select(x => new TypeSummaryItem(x.TrnType, x.Total, x.Count)).ToList(),
+            ByCategory:       data.ByCategory.Select(x => new CategorySummaryItem(
+                                  x.CategoryId, x.CategoryName, x.Color, x.IsInternal, x.Credit, x.Debit, x.Count)).ToList(),
             From:             request.From,
             To:               request.To);
 

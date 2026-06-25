@@ -6,6 +6,8 @@ public sealed record CategoryResponse(
     string Kind,
     string Color,
     bool IsSystem,
+    bool IsInternal,
+    string Keywords,
     bool IsActive,
     DateTime CreatedAt,
     DateTime UpdatedAt);

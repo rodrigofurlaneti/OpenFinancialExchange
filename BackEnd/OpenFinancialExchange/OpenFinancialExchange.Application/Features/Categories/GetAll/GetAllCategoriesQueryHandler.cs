@@ -14,7 +14,7 @@ internal sealed class GetAllCategoriesQueryHandler(ICategoryRepository repositor
 
         var response = categories
             .Select(c => new CategoryResponse(
-                c.Id, c.Name, c.Kind, c.Color, c.IsSystem, c.IsActive, c.CreatedAt, c.UpdatedAt))
+                c.Id, c.Name, c.Kind, c.Color, c.IsSystem, c.IsInternal, c.Keywords, c.IsActive, c.CreatedAt, c.UpdatedAt))
             .ToList()
             .AsReadOnly();
 

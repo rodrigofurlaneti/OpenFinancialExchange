@@ -31,7 +31,7 @@ public sealed class CategoriesController(IMediator mediator) : ApiController(med
     public async Task<IActionResult> Update(long id, [FromBody] UpdateCategoryRequest request, CancellationToken ct)
     {
         var result = await Mediator.Send(
-            new UpdateCategoryCommand(id, request.Name, request.Kind, request.Color), ct);
+            new UpdateCategoryCommand(id, request.Name, request.Kind, request.Color, request.IsInternal, request.Keywords), ct);
         return result.IsFailure ? HandleFailure(result) : NoContent();
     }
 
@@ -43,4 +43,4 @@ public sealed class CategoriesController(IMediator mediator) : ApiController(med
     }
 }
 
-public sealed record UpdateCategoryRequest(string Name, string Kind, string Color);
+public sealed record UpdateCategoryRequest(string Name, string Kind, string Color, bool IsInternal = false, string? Keywords = null);

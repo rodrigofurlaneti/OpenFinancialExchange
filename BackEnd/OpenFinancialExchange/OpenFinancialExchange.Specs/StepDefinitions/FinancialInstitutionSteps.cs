@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Moq;
+using OpenFinancialExchange.Application.Abstractions;
 using OpenFinancialExchange.Application.Features.FinancialInstitutions.Create;
 using OpenFinancialExchange.Domain.Entities;
 using OpenFinancialExchange.Domain.Primitives;
@@ -12,6 +13,7 @@ namespace OpenFinancialExchange.Specs.StepDefinitions;
 public sealed class FinancialInstitutionSteps
 {
     private readonly Mock<IFinancialInstitutionRepository> _repository = new();
+    private readonly Mock<ICurrentUserService> _currentUser = new();
     private readonly Mock<IUnitOfWork> _unitOfWork = new();
     private CreateFinancialInstitutionCommand _command = null!;
     private Result<long> _result = null!;
@@ -37,7 +39,9 @@ public sealed class FinancialInstitutionSteps
     [When(@"I try to create another institution with BankId ""(.*)""")]
     public async Task WhenISendTheCommand(string? _ = null)
     {
-        var handler = new CreateFinancialInstitutionCommandHandler(_repository.Object, _unitOfWork.Object);
+        _currentUser.SetupGet(c => c.UserId).Returns(1L);
+        var handler = new CreateFinancialInstitutionCommandHandler(
+            _repository.Object, _currentUser.Object, _unitOfWork.Object);
         _result = await handler.Handle(_command, CancellationToken.None);
     }
 

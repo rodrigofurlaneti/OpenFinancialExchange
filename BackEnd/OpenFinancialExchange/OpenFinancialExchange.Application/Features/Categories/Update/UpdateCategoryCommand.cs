@@ -6,4 +6,6 @@ public sealed record UpdateCategoryCommand(
     long Id,
     string Name,
     string Kind,
-    string Color) : ICommand;
+    string Color,
+    bool IsInternal = false,
+    string? Keywords = null) : ICommand;

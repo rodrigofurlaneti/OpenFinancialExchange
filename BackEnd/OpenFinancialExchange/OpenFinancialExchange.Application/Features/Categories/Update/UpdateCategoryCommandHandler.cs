@@ -21,7 +21,7 @@ internal sealed class UpdateCategoryCommandHandler(
             return Result.Failure(new Error("Category.AlreadyExists",
                 $"A category named '{request.Name}' already exists."));
 
-        var result = category.Update(request.Name, request.Kind, request.Color);
+        var result = category.Update(request.Name, request.Kind, request.Color, request.IsInternal, request.Keywords);
         if (result.IsFailure)
             return result;
 

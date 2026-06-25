@@ -11,6 +11,11 @@ internal sealed class FinancialInstitutionRepository(AppDbContext context) : IFi
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, ct);
 
+    public async Task<FinancialInstitution?> FindByBankIdAsync(string bankId, CancellationToken ct = default)
+        => await context.FinancialInstitutions
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.BankId == bankId && x.IsActive, ct);
+
     public async Task<IReadOnlyCollection<FinancialInstitution>> GetAllAsync(CancellationToken ct = default)
         => await context.FinancialInstitutions
             .AsNoTracking()

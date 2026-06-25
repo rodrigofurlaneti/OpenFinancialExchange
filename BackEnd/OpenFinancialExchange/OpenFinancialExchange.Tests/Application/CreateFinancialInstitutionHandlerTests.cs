@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NSubstitute;
+using OpenFinancialExchange.Application.Abstractions;
 using OpenFinancialExchange.Application.Features.FinancialInstitutions.Create;
 using OpenFinancialExchange.Domain.Entities;
 using OpenFinancialExchange.Domain.Repositories;
@@ -9,11 +10,15 @@ namespace OpenFinancialExchange.Tests.Application;
 public class CreateFinancialInstitutionHandlerTests
 {
     private readonly IFinancialInstitutionRepository _repository = Substitute.For<IFinancialInstitutionRepository>();
+    private readonly ICurrentUserService _currentUser = Substitute.For<ICurrentUserService>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly CreateFinancialInstitutionCommandHandler _handler;
 
     public CreateFinancialInstitutionHandlerTests()
-        => _handler = new CreateFinancialInstitutionCommandHandler(_repository, _unitOfWork);
+    {
+        _currentUser.UserId.Returns(1L);
+        _handler = new CreateFinancialInstitutionCommandHandler(_repository, _currentUser, _unitOfWork);
+    }
 
     [Fact]
     public async Task Handle_WhenNewInstitution_ShouldAddAndCommit()

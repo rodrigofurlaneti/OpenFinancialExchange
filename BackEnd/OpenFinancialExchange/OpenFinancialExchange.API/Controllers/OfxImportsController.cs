@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using OpenFinancialExchange.Application.Features.OfxImports.Create;
 using OpenFinancialExchange.Application.Features.OfxImports.GetAll;
 using OpenFinancialExchange.Application.Features.OfxImports.GetById;
+using OpenFinancialExchange.Application.Features.OfxImports.Reprocess;
 
 namespace OpenFinancialExchange.API.Controllers;
 
@@ -31,5 +32,21 @@ public sealed class OfxImportsController(IMediator mediator) : ApiController(med
         return result.IsFailure
             ? HandleFailure(result)
             : CreatedAtAction(nameof(GetById), new { id = result.Value }, result.Value);
+    }
+
+    /// <summary>Re-parses one stored import and recreates its statement/transactions.</summary>
+    [HttpPost("{id:long}/reprocess")]
+    public async Task<IActionResult> Reprocess(long id, CancellationToken ct)
+    {
+        var result = await Mediator.Send(new ReprocessImportCommand(id), ct);
+        return result.IsFailure ? HandleFailure(result) : Ok(new { transactionsCreated = result.Value });
+    }
+
+    /// <summary>Reprocesses every stored import for the current user.</summary>
+    [HttpPost("reprocess-all")]
+    public async Task<IActionResult> ReprocessAll(CancellationToken ct)
+    {
+        var result = await Mediator.Send(new ReprocessAllImportsCommand(), ct);
+        return result.IsFailure ? HandleFailure(result) : Ok(result.Value);
     }
 }

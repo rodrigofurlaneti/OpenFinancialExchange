@@ -14,11 +14,13 @@ interface FormValues {
   name: string
   kind: CategoryKind
   color: string
+  isInternal: boolean
+  keywords: string
 }
 
 const KIND_OPTIONS: { value: CategoryKind; label: string }[] = [
-  { value: 'DEBIT', label: 'Despesa (debito)' },
-  { value: 'CREDIT', label: 'Receita (credito)' },
+  { value: 'DEBIT', label: 'Despesa (débito)' },
+  { value: 'CREDIT', label: 'Receita (crédito)' },
   { value: 'BOTH', label: 'Ambos' },
 ]
 
@@ -29,7 +31,9 @@ export function CategoryModal({ editing, onClose }: CategoryModalProps) {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormValues>({ defaultValues: { name: '', kind: 'DEBIT', color: '#10b981' } })
+  } = useForm<FormValues>({
+    defaultValues: { name: '', kind: 'DEBIT', color: '#10b981', isInternal: false, keywords: '' },
+  })
 
   const createMutation = useCreateCategory()
   const updateMutation = useUpdateCategory()
@@ -38,14 +42,26 @@ export function CategoryModal({ editing, onClose }: CategoryModalProps) {
 
   useEffect(() => {
     if (editing) {
-      reset({ name: editing.name, kind: editing.kind, color: editing.color })
+      reset({
+        name: editing.name,
+        kind: editing.kind,
+        color: editing.color,
+        isInternal: editing.isInternal,
+        keywords: editing.keywords,
+      })
     } else {
-      reset({ name: '', kind: 'DEBIT', color: '#10b981' })
+      reset({ name: '', kind: 'DEBIT', color: '#10b981', isInternal: false, keywords: '' })
     }
   }, [editing, reset])
 
   function onSubmit(values: FormValues) {
-    const payload = { name: values.name.trim(), kind: values.kind, color: values.color }
+    const payload = {
+      name: values.name.trim(),
+      kind: values.kind,
+      color: values.color,
+      isInternal: values.isInternal,
+      keywords: values.keywords,
+    }
     if (isEdit) {
       updateMutation.mutate({ id: editing.id, data: payload }, { onSuccess: onClose })
     } else {
@@ -66,10 +82,10 @@ export function CategoryModal({ editing, onClose }: CategoryModalProps) {
           <label className="form-label">Nome *</label>
           <input
             className="form-input"
-            placeholder="Alimentacao"
+            placeholder="Alimentação"
             {...register('name', {
-              required: 'Nome e obrigatorio',
-              maxLength: { value: 50, message: 'Max. 50 caracteres' },
+              required: 'Nome é obrigatório',
+              maxLength: { value: 50, message: 'Máx. 50 caracteres' },
             })}
           />
           {errors.name && <p className="form-error">{errors.name.message}</p>}
@@ -96,10 +112,34 @@ export function CategoryModal({ editing, onClose }: CategoryModalProps) {
           </div>
         </div>
 
+        <div>
+          <label className="form-label">Palavras-chave (auto-categorização)</label>
+          <textarea
+            className="form-input font-mono text-xs"
+            rows={4}
+            placeholder={'Uma por linha. Ex.:\nRESTAURANTE\nSUPERMERCADO\nPANIFICADORA'}
+            {...register('keywords')}
+          />
+          <p className="text-xs text-slate-500 mt-1">
+            Se a descrição da transação contiver alguma destas palavras, ela recebe esta categoria
+            no import/reprocessamento. A maior palavra que casar vence.
+          </p>
+        </div>
+
+        <label className="flex items-start gap-3 cursor-pointer pt-1">
+          <input type="checkbox" className="mt-1 accent-emerald-500" {...register('isInternal')} />
+          <span className="text-sm text-slate-300">
+            Movimentação interna
+            <span className="block text-xs text-slate-500">
+              Transferências / aplicação e resgate de investimento. Não conta como receita nem despesa no dashboard.
+            </span>
+          </span>
+        </label>
+
         <div className="flex justify-end gap-3 pt-2">
           <button type="button" onClick={onClose} className="btn-secondary">Cancelar</button>
           <button type="submit" disabled={isPending} className="btn-primary">
-            {isPending ? 'Salvando...' : isEdit ? 'Salvar' : 'Criar'}
+            {isPending ? 'Salvando…' : isEdit ? 'Salvar' : 'Criar'}
           </button>
         </div>
       </form>
